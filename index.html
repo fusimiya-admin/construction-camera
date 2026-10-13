@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0f172a">
     <title>奥越・美山 現場電子黒板カメラ</title>
     
-    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tesseract.js (OCR Library) -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
@@ -47,25 +46,25 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-slate-100 flex flex-col h-screen overflow-hidden font-sans">
+<body class="text-slate-100 flex flex-col h-screen h-[100dvh] overflow-hidden font-sans">
 
     <!-- Header Navigation -->
-    <header class="bg-slate-900 border-b border-slate-800 px-3 py-2 flex items-center justify-between z-30 shrink-0">
+    <header class="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center justify-between z-30 shrink-0">
         <div class="flex items-center space-x-2">
-            <span class="bg-emerald-600 text-xs font-bold px-2 py-1 rounded text-white tracking-wider">奥越・美山版</span>
-            <h1 class="text-sm font-bold text-slate-100">電子黒板カメラ</h1>
+            <span class="bg-emerald-600 text-[10px] font-bold px-1.5 py-0.5 rounded text-white tracking-wider">奥越・美山版</span>
+            <h1 class="text-xs font-bold text-slate-100">電子黒板カメラ</h1>
         </div>
-        <div class="flex items-center space-x-1.5">
-            <button onclick="switchCameraDevice()" class="bg-indigo-600 hover:bg-indigo-500 text-xs text-white px-2 py-1.5 rounded font-bold flex items-center space-x-1 shadow">
+        <div class="flex items-center space-x-1">
+            <button onclick="switchCameraDevice()" class="bg-indigo-600 hover:bg-indigo-500 text-[11px] text-white px-2 py-1 rounded font-bold flex items-center space-x-1 shadow">
                 <span>📷 切替</span>
             </button>
-            <select id="userSelect" onchange="switchUser(this.value)" class="bg-slate-800 border border-slate-700 text-xs text-slate-200 rounded px-2 py-1.5 focus:outline-none focus:border-emerald-500">
+            <select id="userSelect" onchange="switchUser(this.value)" class="bg-slate-800 border border-slate-700 text-[11px] text-slate-200 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500">
                 <option value="作業員A">撮影者: 作業員A</option>
                 <option value="作業員B">撮影者: 作業員B</option>
                 <option value="現場監督">撮影者: 現場監督</option>
                 <option value="+新規追加">+ 新規</option>
             </select>
-            <button onclick="toggleModal('logModal', true)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs px-2.5 py-1.5 rounded">
+            <button onclick="toggleModal('logModal', true)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] px-2 py-1 rounded">
                 <span>📋 台帳</span>
             </button>
         </div>
@@ -77,10 +76,10 @@
         
         <!-- Interactive Overlay Blackboard -->
         <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-3 select-none font-chalk board-theme-green shadow-2xl transition-all duration-75 inline-block"
-             style="top: 50px; left: 20px; width: 320px; height: auto; touch-action: none;">
+             style="top: 20px; left: 15px; width: 280px; height: auto; touch-action: none;">
             
             <div class="flex justify-between items-center border-b border-current/20 pb-1 mb-1.5 text-xs opacity-80">
-                <span class="font-mono" id="bb-date">2026/10/12</span>
+                <span class="font-mono" id="bb-date">2026/10/13</span>
                 <span class="text-[10px] bg-black/30 px-1.5 py-0.5 rounded" id="bb-user">撮影者: 作業員A</span>
             </div>
 
@@ -107,7 +106,7 @@
         </div>
 
         <!-- GPS Status Banner Overlay -->
-        <div class="absolute top-3 left-3 z-10 bg-slate-900/80 backdrop-blur border border-slate-700/80 px-2.5 py-1 rounded-full text-[11px] text-slate-300 flex items-center space-x-1.5">
+        <div class="absolute top-2 left-2 z-10 bg-slate-900/80 backdrop-blur border border-slate-700/80 px-2 py-0.5 rounded-full text-[10px] text-slate-300 flex items-center space-x-1">
             <span id="gpsIndicator" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
             <span id="gpsText">GPS取得中...</span>
         </div>
@@ -116,8 +115,16 @@
     </main>
 
     <!-- Toolbar & Control Panel -->
-    <div class="bg-slate-900 border-t border-slate-800 p-2.5 z-30 shrink-0 space-y-2">
-        <div class="flex items-center justify-between text-[11px] space-x-1.5 overflow-x-auto no-scrollbar py-0.5">
+    <div class="bg-slate-900 border-t border-slate-800 p-2 z-30 shrink-0 space-y-1.5 pb-safe">
+        <!-- ズーム調整コントローラー -->
+        <div id="zoomContainer" class="hidden flex items-center justify-center space-x-2 bg-slate-950/60 py-1 px-3 rounded-lg border border-slate-800">
+            <span class="text-[10px] font-bold text-slate-400">🔍 ズーム:</span>
+            <input type="range" id="zoomRange" min="1" max="5" step="0.1" value="1" oninput="changeZoom(this.value)" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <span id="zoomVal" class="text-[10px] font-mono text-emerald-400 font-bold w-7 text-right">1.0x</span>
+        </div>
+
+        <!-- 各項目表示・非表示切替コントロール -->
+        <div class="flex items-center justify-between text-[10px] space-x-1 overflow-x-auto no-scrollbar py-0.5">
             <div class="flex items-center space-x-1 shrink-0">
                 <button onclick="toggleBbElement('blackboard')" id="btnToggleBb" class="bg-emerald-600 text-white px-2 py-1 rounded font-bold">黒板: ON</button>
                 <button onclick="toggleBbElement('project')" id="btnToggleProj" class="bg-slate-800 text-slate-200 border border-slate-700 px-2 py-1 rounded">工事名: 表示</button>
@@ -126,35 +133,35 @@
                 <button onclick="toggleBbElement('remarks')" id="btnToggleRem" class="bg-slate-800 text-slate-200 border border-slate-700 px-2 py-1 rounded">備考: 表示</button>
             </div>
 
-            <div class="flex items-center space-x-1 shrink-0 pl-2">
+            <div class="flex items-center space-x-1 shrink-0 pl-1">
                 <span class="text-slate-400">色:</span>
-                <button onclick="setTheme('black')" class="w-5 h-5 rounded bg-zinc-900 border border-zinc-600"></button>
-                <button onclick="setTheme('green')" class="w-5 h-5 rounded bg-emerald-800 border border-emerald-500"></button>
-                <button onclick="setTheme('white')" class="w-5 h-5 rounded bg-white border border-slate-400"></button>
+                <button onclick="setTheme('black')" class="w-4 h-4 rounded bg-zinc-900 border border-zinc-600"></button>
+                <button onclick="setTheme('green')" class="w-4 h-4 rounded bg-emerald-800 border border-emerald-500"></button>
+                <button onclick="setTheme('white')" class="w-4 h-4 rounded bg-white border border-slate-400"></button>
             </div>
 
             <div class="flex items-center space-x-1 shrink-0">
                 <span class="text-slate-400">幅:</span>
-                <button onclick="setSize(260)" class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded text-[10px]">小</button>
-                <button onclick="setSize(320)" class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded text-[10px]">中</button>
-                <button onclick="setSize(380)" class="bg-slate-800 text-slate-200 px-1.5 py-0.5 rounded text-[10px]">大</button>
+                <button onclick="setSize(220)" class="bg-slate-800 text-slate-200 px-1 py-0.5 rounded text-[9px]">小</button>
+                <button onclick="setSize(280)" class="bg-slate-800 text-slate-200 px-1 py-0.5 rounded text-[9px]">中</button>
+                <button onclick="setSize(340)" class="bg-slate-800 text-slate-200 px-1 py-0.5 rounded text-[9px]">大</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-4 gap-2 items-center">
-            <button onclick="toggleModal('ocrModal', true)" class="col-span-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 rounded-lg py-2.5 flex flex-col items-center justify-center">
-                <span class="text-base">📄</span>
-                <span class="text-[10px] font-bold">OCR伝票</span>
+        <div class="grid grid-cols-4 gap-1.5 items-center">
+            <button onclick="toggleModal('ocrModal', true)" class="col-span-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 rounded-lg py-2 flex flex-col items-center justify-center">
+                <span class="text-sm">📄</span>
+                <span class="text-[9px] font-bold">OCR</span>
             </button>
 
-            <button onclick="takePhoto()" class="col-span-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-lg py-2.5 shadow-lg flex items-center justify-center space-x-2 transition-transform">
-                <div class="w-3.5 h-3.5 rounded-full border-2 border-white bg-red-500"></div>
-                <span class="text-sm tracking-wider">撮影・保存</span>
+            <button onclick="takePhoto()" class="col-span-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold rounded-lg py-2.5 shadow-lg flex items-center justify-center space-x-1.5 transition-transform">
+                <div class="w-3 h-3 rounded-full border-2 border-white bg-red-500"></div>
+                <span class="text-xs tracking-wider">撮影・保存</span>
             </button>
 
-            <button onclick="toggleModal('editModal', true)" class="col-span-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 rounded-lg py-2.5 flex flex-col items-center justify-center">
-                <span class="text-base">✏️</span>
-                <span class="text-[10px] font-bold">黒板編集</span>
+            <button onclick="toggleModal('editModal', true)" class="col-span-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 rounded-lg py-2 flex flex-col items-center justify-center">
+                <span class="text-sm">✏️</span>
+                <span class="text-[9px] font-bold">編集</span>
             </button>
         </div>
     </div>
@@ -353,6 +360,7 @@
         let videoDevices = [];
         let currentDeviceIndex = 0;
         let currentStream = null;
+        let videoTrack = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             await initCameraDevices();
@@ -425,8 +433,31 @@
             try {
                 currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = currentStream;
+                videoTrack = currentStream.getVideoTracks()[0];
+
+                // ズーム機能の検知とスライダー表示
+                if (videoTrack && typeof videoTrack.getCapabilities === 'function') {
+                    const capabilities = videoTrack.getCapabilities();
+                    if (capabilities.zoom) {
+                        const zoomContainer = document.getElementById('zoomContainer');
+                        const zoomRange = document.getElementById('zoomRange');
+                        zoomContainer.classList.remove('hidden');
+                        zoomRange.min = capabilities.zoom.min || 1;
+                        zoomRange.max = capabilities.zoom.max || 5;
+                        zoomRange.step = capabilities.zoom.step || 0.1;
+                        zoomRange.value = 1;
+                        document.getElementById('zoomVal').innerText = "1.0x";
+                    }
+                }
             } catch (err) {
                 console.error("カメラ起動エラー:", err);
+            }
+        }
+
+        function changeZoom(val) {
+            if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
+                videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] });
+                document.getElementById('zoomVal').innerText = parseFloat(val).toFixed(1) + "x";
             }
         }
 
@@ -689,7 +720,6 @@
             toggleModal('editModal', false);
         }
 
-        // 写真撮影処理（要素の完全リアルタイム動的高さに完全連携）
         function takePhoto() {
             const video = document.getElementById('webcam');
             const canvas = document.getElementById('captureCanvas');
@@ -707,8 +737,6 @@
             if (visibility.blackboard) {
                 const bb = document.getElementById('blackboard');
                 const mainContainer = video.parentElement.getBoundingClientRect();
-                
-                // 画面上の黒板要素のバウンディングボックスを直接ミリ秒精度で取得
                 const bbRect = bb.getBoundingClientRect();
 
                 const scaleX = canvas.width / mainContainer.width;
@@ -717,7 +745,6 @@
                 const drawX = (bbRect.left - mainContainer.left) * scaleX;
                 const drawY = (bbRect.top - mainContainer.top) * scaleY;
                 const drawWidth = bbRect.width * scaleX;
-                // 正確なリアルタイムoffsetHeight（実要素高さ）を取得して乗算
                 const drawHeight = bb.offsetHeight * scaleY;
 
                 let bgColor1 = "#14532d", bgColor2 = "#064e3b", borderColor = "#854d0e", textColor = "#fef08a";
@@ -727,7 +754,6 @@
                     bgColor1 = "#ffffff"; bgColor2 = "#f4f4f5"; borderColor = "#71717a"; textColor = "#09090b";
                 }
 
-                // 余白を完全排除したリアルタイム動的高さで黒板枠を描画
                 const grad = ctx.createLinearGradient(drawX, drawY, drawX + drawWidth, drawY + drawHeight);
                 grad.addColorStop(0, bgColor1);
                 grad.addColorStop(1, bgColor2);
@@ -743,7 +769,6 @@
                 const padding = 12 * scaleFactor;
                 let currentY = drawY + padding + (20 * scaleFactor);
 
-                // 日付＆撮影者（超巨大化: 20px相当）
                 ctx.font = `bold ${20 * scaleFactor}px sans-serif`;
                 const dateStr = document.getElementById('bb-date').innerText;
                 ctx.fillText(`${dateStr}  撮影者: ${currentUser}`, drawX + padding, currentY);
@@ -757,7 +782,6 @@
                 ctx.stroke();
                 ctx.globalAlpha = 1.0;
 
-                // 工事名（超巨大化: 項目名15px / 本文26px相当）
                 if (visibility.project) {
                     currentY += 22 * scaleFactor;
                     ctx.font = `${15 * scaleFactor}px sans-serif`;
@@ -767,7 +791,6 @@
                     ctx.fillText(boardState.project, drawX + padding, currentY, drawWidth - (padding * 2));
                 }
 
-                // 工種・測点（超巨大化: 項目名15px / 本文24px相当）
                 if (visibility.type || visibility.location) {
                     currentY += 28 * scaleFactor;
                     ctx.font = `${15 * scaleFactor}px sans-serif`;
@@ -786,7 +809,6 @@
                     }
                 }
 
-                // 備考（超巨大化: 項目名15px / 本文20px相当）
                 if (visibility.remarks) {
                     currentY += 28 * scaleFactor;
                     ctx.font = `${15 * scaleFactor}px sans-serif`;
