@@ -27,7 +27,7 @@
         .board-theme-green { background: linear-gradient(135deg, #14532d, #064e3b); border: 3px solid #854d0e; color: #fef08a; }
         .board-theme-white { background: linear-gradient(135deg, #ffffff, #f4f4f5); border: 3px solid #71717a; color: #09090b; }
         
-        /* 画面が横向き（90度傾けた時）に黒板・アイコンを自動90度回転 */
+        /* 90度横持ち時に黒板を自動回転 */
         @media (orientation: landscape) {
             .auto-rotate-board {
                 transform: rotate(-90deg);
@@ -45,8 +45,8 @@
         }
         .focus-ring {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             border: 2px solid #eab308;
             border-radius: 50%;
             pointer-events: none;
@@ -57,47 +57,47 @@
 </head>
 <body class="text-slate-100 flex flex-col h-screen h-[100dvh] overflow-hidden bg-black justify-between">
 
-    <!-- ヘッダーナビゲーション -->
+    <!-- ヘッダーバー -->
     <header class="bg-black/90 px-2 py-1 flex items-center justify-between z-30 shrink-0 border-b border-white/10">
-        <div class="flex items-center space-x-1.5">
+        <div class="flex items-center space-x-1">
             <span class="bg-emerald-600 text-[9px] font-bold px-1.5 py-0.5 rounded text-white icon-rotate">奥越・美山</span>
-            <h1 class="text-[11px] font-bold text-white icon-rotate">電子黒板カメラ</h1>
+            <h1 class="text-[10px] font-bold text-white icon-rotate">電子黒板カメラ</h1>
         </div>
         <div class="flex items-center space-x-1">
-            <button onclick="switchCameraDevice()" class="bg-zinc-800 text-[10px] text-white px-2 py-0.5 rounded-full border border-white/20 icon-rotate">📷 切替</button>
+            <button onclick="switchCameraDevice()" class="bg-zinc-800 text-[10px] text-white px-2 py-0.5 rounded-full border border-white/20 icon-rotate">📷切替</button>
             <select id="userSelect" onchange="switchUser(this.value)" class="bg-zinc-800 border border-white/20 text-[10px] text-white rounded-full px-1 py-0.5">
                 <option value="作業員A">作業員A</option>
                 <option value="作業員B">作業員B</option>
                 <option value="現場監督">現場監督</option>
-                <option value="+新規追加">+ 新規</option>
+                <option value="+新規追加">+新規</option>
             </select>
-            <button onclick="toggleModal('logModal', true)" class="bg-zinc-800 text-[10px] text-white px-2 py-0.5 rounded-full border border-white/20 icon-rotate">📋 台帳</button>
+            <button onclick="openModal('logModal')" class="bg-zinc-800 text-[10px] text-white px-2 py-0.5 rounded-full border border-white/20 icon-rotate">📋台帳</button>
         </div>
     </header>
 
-    <!-- カメラ画面メイン枠 -->
+    <!-- カメラメイン枠 -->
     <main id="cameraContainer" onclick="handleTapToFocus(event)" class="relative flex-1 bg-black flex items-center justify-center overflow-hidden min-h-0">
         <video id="webcam" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
         
-        <!-- 自動回転付き可動式黒板 -->
-        <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-2 font-chalk board-theme-green shadow-2xl inline-block auto-rotate-board"
-             style="top: 10px; left: 10px; width: 200px; touch-action: none;">
-            <div class="flex justify-between items-center border-b border-current/20 pb-0.5 mb-0.5 text-[9px] opacity-80">
+        <!-- 横持ち自動回転黒板 -->
+        <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-1.5 font-chalk board-theme-green shadow-2xl inline-block auto-rotate-board"
+             style="top: 10px; left: 10px; width: 190px; touch-action: none;">
+            <div class="flex justify-between items-center border-b border-current/20 pb-0.5 mb-0.5 text-[8px] opacity-80">
                 <span class="font-mono" id="bb-date">2026/10/15</span>
                 <span class="text-[8px] bg-black/30 px-1 py-0.5 rounded" id="bb-user">作業員A</span>
             </div>
             <div id="bb-row-project" class="mb-0.5">
                 <div class="text-[7px] opacity-70">工事名</div>
-                <div id="bb-project" class="text-[10px] font-bold truncate">大野市朝晴町 水道管修繕工事</div>
+                <div id="bb-project" class="text-[9px] font-bold truncate">大野市朝晴町 水道管修繕工事</div>
             </div>
-            <div id="bb-row-type-loc" class="grid grid-cols-2 gap-1 border-t border-current/20 pt-0.5 mb-0.5">
+            <div id="bb-row-type-loc" class="grid grid-cols-2 gap-0.5 border-t border-current/20 pt-0.5 mb-0.5">
                 <div id="bb-box-type">
                     <div class="text-[7px] opacity-70">工種</div>
-                    <div id="bb-type" class="text-[10px] font-bold truncate">配管工</div>
+                    <div id="bb-type" class="text-[9px] font-bold truncate">配管工</div>
                 </div>
                 <div id="bb-box-location">
                     <div class="text-[7px] opacity-70">測点</div>
-                    <div id="bb-location" class="text-[10px] font-bold truncate">No.3 + 5.0m</div>
+                    <div id="bb-location" class="text-[9px] font-bold truncate">No.3 + 5.0m</div>
                 </div>
             </div>
             <div id="bb-row-remarks" class="border-t border-current/20 pt-0.5">
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <div class="absolute top-1.5 left-1.5 z-10 bg-black/60 border border-white/20 px-2 py-0.5 rounded-full text-[8px] text-slate-300 flex items-center space-x-1 icon-rotate">
+        <div class="absolute top-1 left-1 z-10 bg-black/60 border border-white/20 px-1.5 py-0.5 rounded-full text-[8px] text-slate-300 flex items-center space-x-1 icon-rotate">
             <span id="gpsIndicator" class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
             <span id="gpsText">GPS取得中...</span>
         </div>
@@ -115,51 +115,45 @@
         <canvas id="captureCanvas" class="hidden"></canvas>
     </main>
 
-    <!-- 下部操作パネル -->
-    <div class="bg-black border-t border-white/10 px-2 py-1 z-30 shrink-0 space-y-1">
-        <!-- レンズ倍率選択（0.6x超広角対応） -->
-        <div class="flex items-center justify-center space-x-3 py-0.5">
-            <button onclick="setZoomFactor(0.6)" class="w-6 h-6 rounded-full bg-zinc-900 border border-white/20 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">0.6x</button>
-            <button onclick="setZoomFactor(1.0)" class="w-6 h-6 rounded-full bg-emerald-600 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95 shadow">1x</button>
-            <button onclick="setZoomFactor(2.0)" class="w-6 h-6 rounded-full bg-zinc-900 border border-white/20 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">2x</button>
-            <button onclick="setZoomFactor(3.0)" class="w-6 h-6 rounded-full bg-zinc-900 border border-white/20 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">3x</button>
-        </div>
-
-        <!-- 黒板表示コントロール -->
-        <div class="flex items-center justify-between text-[9px] space-x-1 overflow-x-auto py-0.5">
-            <div class="flex items-center space-x-1 shrink-0">
-                <button onclick="toggleBbElement('blackboard')" class="bg-emerald-600 text-white px-1.5 py-0.5 rounded font-bold icon-rotate">黒板: ON</button>
-                <button onclick="toggleBbElement('project')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1 py-0.5 rounded icon-rotate">工事名</button>
-                <button onclick="toggleBbElement('type')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1 py-0.5 rounded icon-rotate">工種</button>
-                <button onclick="toggleBbElement('location')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1 py-0.5 rounded icon-rotate">測点</button>
-                <button onclick="toggleBbElement('remarks')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1 py-0.5 rounded icon-rotate">備考</button>
+    <!-- 下部操作パネル（コンパクト固定設計） -->
+    <div class="bg-black/95 border-t border-white/10 px-2 py-1 z-30 shrink-0 space-y-1">
+        <!-- 1行目: 倍率切り替え ＆ 黒板色選択 -->
+        <div class="flex items-center justify-between px-1">
+            <div class="flex items-center space-x-2">
+                <button onclick="setZoomFactor(0.6)" class="w-6 h-6 rounded-full bg-zinc-900 border border-white/20 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">0.6x</button>
+                <button onclick="setZoomFactor(1.0)" class="w-6 h-6 rounded-full bg-emerald-600 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95 shadow">1x</button>
+                <button onclick="setZoomFactor(2.0)" class="w-6 h-6 rounded-full bg-zinc-900 border border-white/20 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">2x</button>
+                <button onclick="setZoomFactor(3.0)" class="w-6 h-6 rounded-full bg-zinc-900 border border-white/20 text-[9px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">3x</button>
             </div>
+            
             <div class="flex items-center space-x-1 shrink-0">
-                <button onclick="setTheme('black')" class="w-3 h-3 rounded-full bg-zinc-900 border border-zinc-600"></button>
-                <button onclick="setTheme('green')" class="w-3 h-3 rounded-full bg-emerald-800 border border-emerald-500"></button>
-                <button onclick="setTheme('white')" class="w-3 h-3 rounded-full bg-white border border-slate-400"></button>
+                <button onclick="setTheme('black')" class="w-3.5 h-3.5 rounded-full bg-zinc-900 border border-zinc-600"></button>
+                <button onclick="setTheme('green')" class="w-3.5 h-3.5 rounded-full bg-emerald-800 border border-emerald-500"></button>
+                <button onclick="setTheme('white')" class="w-3.5 h-3.5 rounded-full bg-white border border-slate-400"></button>
             </div>
         </div>
 
-        <!-- 丸型シャッター ＆ アクションボタン -->
+        <!-- 2行目: 撮影シャッター ＆ 編集 ＆ OCRボタン（最優先表示） -->
         <div class="flex items-center justify-around py-0.5">
-            <button onclick="openOcrModal()" class="w-9 h-9 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
+            <button onclick="openModal('ocrModal')" class="w-9 h-9 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
                 <span class="text-[10px]">📄</span>
                 <span class="text-[6px] font-bold">OCR</span>
             </button>
 
+            <!-- メイン撮影ボタン -->
             <button onclick="takePhoto()" class="w-12 h-12 rounded-full border-2 border-white bg-transparent flex items-center justify-center active:scale-90 transition-transform">
                 <div class="w-9 h-9 rounded-full bg-white"></div>
             </button>
 
-            <button onclick="openEditModal()" class="w-9 h-9 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
+            <!-- 黒板編集ボタン -->
+            <button onclick="openModal('editModal')" class="w-9 h-9 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
                 <span class="text-[10px]">✏️</span>
                 <span class="text-[6px] font-bold">編集</span>
             </button>
         </div>
     </div>
 
-    <!-- 黒板直接修正モーダル -->
+    <!-- 黒板編集モーダル -->
     <div id="editModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4 overflow-y-auto">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
             <h2 class="text-xs font-bold text-white">✏️ 黒板記載事項の修正</h2>
@@ -219,7 +213,7 @@
         </div>
     </div>
 
-    <!-- ログモーダル -->
+    <!-- ログ台帳モーダル -->
     <div id="logModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
             <h2 class="text-xs font-bold text-white">📋 撮影ログ台帳</h2>
@@ -285,7 +279,6 @@
 
         async function setZoomFactor(val) {
             if (val === 0.6) {
-                // 超広角レンズを探して切り替え
                 const wideDevice = videoDevices.find(d => 
                     d.label.toLowerCase().includes('wide') || 
                     d.label.toLowerCase().includes('ultra') || 
@@ -316,7 +309,7 @@
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const layer = document.getElementById('focusLayer');
-            layer.innerHTML = `<div class="focus-ring" style="left: ${x - 25}px; top: ${y - 25}px;"></div>`;
+            layer.innerHTML = `<div class="focus-ring" style="left: ${x - 22}px; top: ${y - 22}px;"></div>`;
             setTimeout(() => { layer.innerHTML = ''; }, 800);
             if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
                 videoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
@@ -364,15 +357,6 @@
             bb.addEventListener('touchstart', startDrag, { passive: true }); window.addEventListener('touchmove', moveDrag, { passive: true }); window.addEventListener('touchend', stopDrag);
         }
 
-        function toggleBbElement(target) {
-            visibility[target] = !visibility[target];
-            if (target === 'blackboard') document.getElementById('blackboard').style.display = visibility.blackboard ? 'block' : 'none';
-            else if (target === 'project') document.getElementById('bb-row-project').style.display = visibility.project ? 'block' : 'none';
-            else if (target === 'type') document.getElementById('bb-box-type').style.display = visibility.type ? 'block' : 'none';
-            else if (target === 'location') document.getElementById('bb-box-location').style.display = visibility.location ? 'block' : 'none';
-            else if (target === 'remarks') document.getElementById('bb-row-remarks').style.display = visibility.remarks ? 'block' : 'none';
-        }
-
         function setTheme(theme) {
             const bb = document.getElementById('blackboard');
             bb.classList.remove('board-theme-black', 'board-theme-green', 'board-theme-white');
@@ -395,13 +379,12 @@
             document.getElementById('inputRemarks').value = boardState.remarks;
         }
 
-        function openEditModal() { document.getElementById('editModal').style.display = 'flex'; }
-        function openOcrModal() { document.getElementById('ocrModal').style.display = 'flex'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function startVoiceInput(targetInputId) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return alert("お使いのブラウザは音声入力非対応です。キーボードのマイク機能をお使いください。");
+            if (!SpeechRecognition) return alert("お使いのブラウザは音声入力非対応です。キーボードのマイクをお使いください。");
             try {
                 const recognition = new SpeechRecognition();
                 recognition.lang = 'ja-JP';
@@ -441,10 +424,6 @@
             a.href = dataUrl;
             a.download = fileName;
             a.click();
-        }
-
-        function toggleModal(modalId, show) {
-            document.getElementById(modalId).style.display = show ? 'flex' : 'none';
         }
     </script>
 </body>
