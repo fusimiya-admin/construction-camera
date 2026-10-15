@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
-    
     <title>奥越・美山 現場電子黒板カメラ</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
@@ -25,35 +22,16 @@
         .font-chalk {
             font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
             font-weight: 700;
-            letter-spacing: 0.05em;
         }
-        .board-theme-black {
-            background: linear-gradient(135deg, #18181b, #09090b);
-            border: 4px solid #3f3f46;
-            color: #ffffff;
-        }
-        .board-theme-green {
-            background: linear-gradient(135deg, #14532d, #064e3b);
-            border: 4px solid #854d0e;
-            color: #fef08a;
-        }
-        .board-theme-white {
-            background: linear-gradient(135deg, #ffffff, #f4f4f5);
-            border: 4px solid #71717a;
-            color: #09090b;
-        }
+        .board-theme-black { background: linear-gradient(135deg, #18181b, #09090b); border: 4px solid #3f3f46; color: #ffffff; }
+        .board-theme-green { background: linear-gradient(135deg, #14532d, #064e3b); border: 4px solid #854d0e; color: #fef08a; }
+        .board-theme-white { background: linear-gradient(135deg, #ffffff, #f4f4f5); border: 4px solid #71717a; color: #09090b; }
         
-        /* 90度回転時のアイコン回転アニメーション */
-        .icon-rotate {
-            transition: transform 0.3s ease;
-        }
+        .icon-rotate { transition: transform 0.3s ease; }
         @media (orientation: landscape) {
-            .icon-rotate {
-                transform: rotate(-90deg);
-            }
+            .icon-rotate { transform: rotate(-90deg); }
         }
 
-        /* フォーカスリングアニメーション */
         @keyframes focusPulse {
             0% { transform: scale(1.3); opacity: 1; }
             50% { transform: scale(0.9); opacity: 0.8; }
@@ -71,49 +49,38 @@
         }
     </style>
 </head>
+<body class="text-slate-100 flex flex-col h-screen h-[100dvh] overflow-hidden bg-black">
 
-<body class="text-slate-100 flex flex-col h-screen h-[100dvh] overflow-hidden bg-black select-none">
-
-    <!-- Top Header Navigation -->
-    <header class="bg-black/80 backdrop-blur px-3 py-2 flex items-center justify-between z-30 shrink-0 border-b border-white/10">
+    <header class="bg-black/90 px-3 py-1.5 flex items-center justify-between z-30 shrink-0 border-b border-white/10">
         <div class="flex items-center space-x-2">
             <span class="bg-emerald-600 text-[10px] font-bold px-1.5 py-0.5 rounded text-white icon-rotate">奥越・美山</span>
             <h1 class="text-xs font-bold text-white icon-rotate">電子黒板カメラ</h1>
         </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="switchCameraDevice()" class="bg-zinc-800 hover:bg-zinc-700 text-xs text-white px-2.5 py-1 rounded-full border border-white/20 flex items-center space-x-1 icon-rotate">
-                <span>📷 切替</span>
-            </button>
-            <select id="userSelect" onchange="switchUser(this.value)" class="bg-zinc-800 border border-white/20 text-xs text-white rounded-full px-2 py-1 focus:outline-none">
+        <div class="flex items-center space-x-1.5">
+            <button onclick="switchCameraDevice()" class="bg-zinc-800 text-xs text-white px-2 py-1 rounded-full border border-white/20 icon-rotate">📷 切替</button>
+            <select id="userSelect" onchange="switchUser(this.value)" class="bg-zinc-800 border border-white/20 text-xs text-white rounded-full px-1.5 py-1">
                 <option value="作業員A">作業員A</option>
                 <option value="作業員B">作業員B</option>
                 <option value="現場監督">現場監督</option>
                 <option value="+新規追加">+ 新規</option>
             </select>
-            <button onclick="toggleModal('logModal', true)" class="bg-zinc-800 hover:bg-zinc-700 text-xs text-white px-2.5 py-1 rounded-full border border-white/20 icon-rotate">
-                <span>📋 台帳</span>
-            </button>
+            <button onclick="toggleModal('logModal', true)" class="bg-zinc-800 text-xs text-white px-2 py-1 rounded-full border border-white/20 icon-rotate">📋 台帳</button>
         </div>
     </header>
 
-    <!-- Main Camera View Window -->
     <main id="cameraContainer" onclick="handleTapToFocus(event)" class="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
         <video id="webcam" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
         
-        <!-- Interactive Overlay Blackboard -->
-        <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-2.5 font-chalk board-theme-green shadow-2xl transition-all duration-75 inline-block"
-             style="top: 20px; left: 15px; width: 250px; height: auto; touch-action: none;">
-            
+        <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-2.5 font-chalk board-theme-green shadow-2xl inline-block"
+             style="top: 15px; left: 15px; width: 240px; touch-action: none;">
             <div class="flex justify-between items-center border-b border-current/20 pb-1 mb-1 text-[11px] opacity-80">
-                <span class="font-mono" id="bb-date">2026/10/14</span>
+                <span class="font-mono" id="bb-date">2026/10/15</span>
                 <span class="text-[9px] bg-black/30 px-1 py-0.5 rounded" id="bb-user">撮影者: 作業員A</span>
             </div>
-
             <div id="bb-row-project" class="mb-1">
                 <div class="text-[9px] opacity-70">工事名</div>
                 <div id="bb-project" class="text-xs font-bold truncate">大野市朝晴町 水道管修繕工事</div>
             </div>
-
             <div id="bb-row-type-loc" class="grid grid-cols-2 gap-1.5 border-t border-current/20 pt-1 mb-1">
                 <div id="bb-box-type">
                     <div class="text-[9px] opacity-70">工種</div>
@@ -124,72 +91,61 @@
                     <div id="bb-location" class="text-xs font-bold truncate">No.3 + 5.0m</div>
                 </div>
             </div>
-
             <div id="bb-row-remarks" class="border-t border-current/20 pt-1">
                 <div class="text-[9px] opacity-70">備考 / 施工状況</div>
                 <div id="bb-remarks" class="text-[10px] break-words line-clamp-2">掘削完了 舗装版破砕</div>
             </div>
         </div>
 
-        <!-- GPS Indicator -->
-        <div class="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur border border-white/20 px-2 py-0.5 rounded-full text-[10px] text-slate-300 flex items-center space-x-1 icon-rotate">
+        <div class="absolute top-2 left-2 z-10 bg-black/60 border border-white/20 px-2 py-0.5 rounded-full text-[10px] text-slate-300 flex items-center space-x-1 icon-rotate">
             <span id="gpsIndicator" class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
             <span id="gpsText">GPS取得中...</span>
         </div>
 
-        <!-- Focus Ring Dynamic Layer -->
         <div id="focusLayer"></div>
-
         <canvas id="captureCanvas" class="hidden"></canvas>
     </main>
 
-    <!-- Sub Control Panel -->
-    <div class="bg-black border-t border-white/10 p-2 z-30 shrink-0 space-y-2">
-        <!-- ズーム選択ボタン群 -->
-        <div class="flex items-center justify-center space-x-3">
-            <button onclick="setZoomFactor(0.6)" class="w-8 h-8 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">0.6x</button>
-            <button onclick="setZoomFactor(1.0)" class="w-8 h-8 rounded-full bg-emerald-600 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95 shadow-lg">1x</button>
-            <button onclick="setZoomFactor(2.0)" class="w-8 h-8 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">2x</button>
-            <button onclick="setZoomFactor(3.0)" class="w-8 h-8 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">3x</button>
+    <div class="bg-black border-t border-white/10 px-2 py-1.5 z-30 shrink-0 space-y-1.5">
+        <div class="flex items-center justify-center space-x-3 py-0.5">
+            <button onclick="setZoomFactor(0.6)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">0.6x</button>
+            <button onclick="setZoomFactor(1.0)" class="w-7 h-7 rounded-full bg-emerald-600 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">1x</button>
+            <button onclick="setZoomFactor(2.0)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">2x</button>
+            <button onclick="setZoomFactor(3.0)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">3x</button>
         </div>
 
-        <!-- 各項目表示・非表示コントロール -->
-        <div class="flex items-center justify-between text-[10px] space-x-1 overflow-x-auto no-scrollbar py-0.5">
+        <div class="flex items-center justify-between text-[10px] space-x-1 overflow-x-auto py-0.5">
             <div class="flex items-center space-x-1 shrink-0">
-                <button onclick="toggleBbElement('blackboard')" id="btnToggleBb" class="bg-emerald-600 text-white px-2 py-1 rounded font-bold icon-rotate">黒板: ON</button>
-                <button onclick="toggleBbElement('project')" id="btnToggleProj" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-2 py-1 rounded icon-rotate">工事名</button>
-                <button onclick="toggleBbElement('type')" id="btnToggleType" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-2 py-1 rounded icon-rotate">工種</button>
-                <button onclick="toggleBbElement('location')" id="btnToggleLoc" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-2 py-1 rounded icon-rotate">測点</button>
-                <button onclick="toggleBbElement('remarks')" id="btnToggleRem" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-2 py-1 rounded icon-rotate">備考</button>
+                <button onclick="toggleBbElement('blackboard')" class="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold icon-rotate">黒板: ON</button>
+                <button onclick="toggleBbElement('project')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1.5 py-0.5 rounded icon-rotate">工事名</button>
+                <button onclick="toggleBbElement('type')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1.5 py-0.5 rounded icon-rotate">工種</button>
+                <button onclick="toggleBbElement('location')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1.5 py-0.5 rounded icon-rotate">測点</button>
+                <button onclick="toggleBbElement('remarks')" class="bg-zinc-800 text-slate-200 border border-zinc-700 px-1.5 py-0.5 rounded icon-rotate">備考</button>
             </div>
-
-            <div class="flex items-center space-x-1 shrink-0 px-1">
-                <button onclick="setTheme('black')" class="w-4 h-4 rounded-full bg-zinc-900 border border-zinc-600"></button>
-                <button onclick="setTheme('green')" class="w-4 h-4 rounded-full bg-emerald-800 border border-emerald-500"></button>
-                <button onclick="setTheme('white')" class="w-4 h-4 rounded-full bg-white border border-slate-400"></button>
+            <div class="flex items-center space-x-1 shrink-0">
+                <button onclick="setTheme('black')" class="w-3.5 h-3.5 rounded-full bg-zinc-900 border border-zinc-600"></button>
+                <button onclick="setTheme('green')" class="w-3.5 h-3.5 rounded-full bg-emerald-800 border border-emerald-500"></button>
+                <button onclick="setTheme('white')" class="w-3.5 h-3.5 rounded-full bg-white border border-slate-400"></button>
             </div>
         </div>
 
-        <!-- Camera Shutter & Action Bar (標準カメラ風UI) -->
         <div class="flex items-center justify-around py-1">
-            <button onclick="toggleModal('ocrModal', true)" class="w-12 h-12 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
-                <span class="text-sm">📄</span>
-                <span class="text-[8px] font-bold">OCR</span>
+            <button onclick="toggleModal('ocrModal', true)" class="w-10 h-10 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate">
+                <span class="text-xs">📄</span>
+                <span class="text-[7px] font-bold">OCR</span>
             </button>
 
-            <!-- 丸型撮影シャッターボタン -->
-            <button onclick="takePhoto()" class="w-16 h-16 rounded-full border-4 border-white bg-transparent flex items-center justify-center active:scale-90 transition-transform">
-                <div class="w-13 h-13 rounded-full bg-white"></div>
+            <button onclick="takePhoto()" class="w-14 h-14 rounded-full border-4 border-white bg-transparent flex items-center justify-center active:scale-90 transition-transform">
+                <div class="w-11 h-11 rounded-full bg-white"></div>
             </button>
 
-            <button onclick="toggleModal('editModal', true)" class="w-12 h-12 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
-                <span class="text-sm">✏️</span>
-                <span class="text-[8px] font-bold">編集</span>
+            <button onclick="toggleModal('editModal', true)" class="w-10 h-10 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate">
+                <span class="text-xs">✏️</span>
+                <span class="text-[7px] font-bold">編集</span>
             </button>
         </div>
     </div>
 
-    <!-- MODALS -->
     <div id="ocrModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4 overflow-y-auto">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
             <h2 class="text-sm font-bold text-white">📄 伝票解析 ＆ 地名自動補正</h2>
@@ -197,41 +153,15 @@
         </div>
         <div class="mt-4 space-y-4 flex-1">
             <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-                <label class="block text-xs font-bold text-slate-300 mb-2">手書き伝票の写真をアップロードしてOCR解析</label>
-                <input type="file" id="ocrFileInput" accept="image/*" onchange="processOcrImage(event)" class="text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 w-full"/>
-                <div id="ocrProgress" class="hidden mt-2 text-xs text-emerald-400 font-mono animate-pulse">解析処理中... Tesseract OCR Engine Running</div>
+                <input type="file" id="ocrFileInput" accept="image/*" onchange="processOcrImage(event)" class="text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white w-full"/>
             </div>
             <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-                <label class="block text-xs font-bold text-slate-300 mb-2">伝票テキストを直接入力/貼り付け</label>
-                <textarea id="ocrRawInput" rows="3" placeholder="例: 大野市太野町 水道管工事\n工種: 配管工\n測点: No.2" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"></textarea>
-                <button onclick="parseRawText()" class="mt-2 w-full bg-zinc-800 hover:bg-zinc-700 text-xs font-bold py-2 rounded text-emerald-400 border border-zinc-700">テキスト構造化 ＆ 地名自動照合を実行</button>
+                <textarea id="ocrRawInput" rows="3" placeholder="伝票テキストを入力" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-slate-200"></textarea>
+                <button onclick="parseRawText()" class="mt-2 w-full bg-zinc-800 text-xs font-bold py-2 rounded text-emerald-400">テキスト照合を実行</button>
             </div>
             <div id="ocrResultBox" class="hidden bg-zinc-900 border border-emerald-500/50 rounded-lg p-3 space-y-2">
-                <div class="text-xs font-bold text-emerald-400 flex justify-between">
-                    <span>解析・地名辞書補正結果</span>
-                    <span id="fuzzyMatchTag" class="text-[10px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800">照合完了</span>
-                </div>
-                <div class="grid grid-cols-1 gap-2 text-xs">
-                    <div>
-                        <span class="text-slate-400">検出住所/工事名:</span>
-                        <input type="text" id="resProject" class="w-full bg-black border border-zinc-800 rounded p-1.5 text-slate-100 font-bold mt-0.5">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <span class="text-slate-400">工種:</span>
-                            <input type="text" id="resType" class="w-full bg-black border border-zinc-800 rounded p-1.5 text-slate-100 mt-0.5">
-                        </div>
-                        <div>
-                            <span class="text-slate-400">測点:</span>
-                            <input type="text" id="resLocation" class="w-full bg-black border border-zinc-800 rounded p-1.5 text-slate-100 mt-0.5">
-                        </div>
-                    </div>
-                    <div>
-                        <span class="text-slate-400">備考:</span>
-                        <input type="text" id="resRemarks" class="w-full bg-black border border-zinc-800 rounded p-1.5 text-slate-100 mt-0.5">
-                    </div>
-                </div>
-                <button onclick="applyOcrToBoard()" class="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 rounded shadow">この内容を黒板へ自動転記</button>
+                <input type="text" id="resProject" class="w-full bg-black border border-zinc-800 rounded p-1 text-xs text-white">
+                <button onclick="applyOcrToBoard()" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded">黒板へ反映</button>
             </div>
         </div>
     </div>
@@ -241,99 +171,55 @@
             <h2 class="text-sm font-bold text-white">✏️ 黒板記載事項の修正 (音声入力対応)</h2>
             <button onclick="toggleModal('editModal', false)" class="text-slate-400 text-xl font-bold px-2">&times;</button>
         </div>
-
         <div class="mt-4 space-y-3 flex-1">
             <div>
                 <label class="block text-xs text-slate-400 mb-1">工事名</label>
                 <div class="flex space-x-2">
-                    <input type="text" id="inputProject" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    <button onclick="startVoiceInput('inputProject')" class="bg-zinc-800 hover:bg-zinc-700 px-3 rounded text-sm border border-zinc-700 text-emerald-400">🎤</button>
+                    <input type="text" id="inputProject" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100">
+                    <button onclick="startVoiceInput('inputProject')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
                 </div>
             </div>
-
             <div>
                 <label class="block text-xs text-slate-400 mb-1">工種</label>
                 <div class="flex space-x-2">
-                    <input type="text" id="inputType" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    <button onclick="startVoiceInput('inputType')" class="bg-zinc-800 hover:bg-zinc-700 px-3 rounded text-sm border border-zinc-700 text-emerald-400">🎤</button>
+                    <input type="text" id="inputType" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100">
+                    <button onclick="startVoiceInput('inputType')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
                 </div>
             </div>
-
             <div>
                 <label class="block text-xs text-slate-400 mb-1">測点</label>
                 <div class="flex space-x-2">
-                    <input type="text" id="inputLocation" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
-                    <button onclick="startVoiceInput('inputLocation')" class="bg-zinc-800 hover:bg-zinc-700 px-3 rounded text-sm border border-zinc-700 text-emerald-400">🎤</button>
+                    <input type="text" id="inputLocation" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100">
+                    <button onclick="startVoiceInput('inputLocation')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
                 </div>
             </div>
-
             <div>
-                <label class="block text-xs text-slate-400 mb-1">備考 / 施工状況</label>
+                <label class="block text-xs text-slate-400 mb-1">備考</label>
                 <div class="flex space-x-2">
-                    <textarea id="inputRemarks" rows="2" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
-                    <button onclick="startVoiceInput('inputRemarks')" class="bg-zinc-800 hover:bg-zinc-700 px-3 rounded text-sm border border-zinc-700 text-emerald-400">🎤</button>
+                    <textarea id="inputRemarks" rows="2" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100"></textarea>
+                    <button onclick="startVoiceInput('inputRemarks')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
                 </div>
             </div>
-
-            <button onclick="saveEditModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg text-sm mt-4">黒板に反映</button>
+            <button onclick="saveEditModal()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg text-sm mt-4">黒板に反映</button>
         </div>
     </div>
 
-    <div id="logModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4 overflow-hidden">
+    <div id="logModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
             <h2 class="text-sm font-bold text-white">📋 撮影ログ台帳</h2>
             <button onclick="toggleModal('logModal', false)" class="text-slate-400 text-xl font-bold px-2">&times;</button>
         </div>
-
-        <div class="my-3 flex justify-between items-center">
-            <span id="logCount" class="text-xs text-slate-400">総件数: 0 件</span>
-            <div class="space-x-2">
-                <button onclick="exportCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded font-bold">CSV出力</button>
-                <button onclick="clearLogs()" class="bg-rose-900/60 hover:bg-rose-800 text-rose-300 border border-rose-800 text-xs px-2.5 py-1.5 rounded">削除</button>
-            </div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto border border-zinc-800 rounded-lg bg-zinc-900">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead class="bg-black text-slate-400 sticky top-0 border-b border-zinc-800">
-                    <tr>
-                        <th class="p-2">写真</th>
-                        <th class="p-2">日時 / 撮影者</th>
-                        <th class="p-2">工事名 / 工種</th>
-                        <th class="p-2">測点 / 備考</th>
-                        <th class="p-2">GPS</th>
-                    </tr>
-                </thead>
-                <tbody id="logTableBody" class="divide-y divide-zinc-800 text-slate-200">
-                </tbody>
-            </table>
-        </div>
+        <div id="logTableBody" class="flex-1 overflow-y-auto mt-3 space-y-2"></div>
     </div>
 
-    <!-- Application Script -->
     <script>
         const GOOGLE_GAS_URL = "https://script.google.com/macros/s/AKfycby0y8MW4ZGf92xM_a2u_mMLKwbSryXbp_r4dalWZeqq_FupJw5-sX8rc3rxLa_YBTupow/exec";
         const GOOGLE_FOLDER_ID = "12HcTx8JlngRIG78T4-Kai1AU-P_Fo-hC";
 
-        const LOCATION_DICTIONARY = [
-            "大野市", "明倫町", "城町", "天神町", "本町", "元町", "錦町", "日吉町", "月見町", "神明町",
-            "水落町", "新田町", "中野", "朝日町", "春日", "神代", "蕨生", "牛ヶ原", "鍬掛", "友江",
-            "上庄", "中庄", "下庄", "富嶋", "首山", "森目", "阪谷", "萩野", "落合", "中島", "勝原",
-            "角野", "箱ヶ瀬", "九頭竜", "和泉", "穴野", "貝皿", "野中", "東中野", "西中野", "木本",
-            "勝山市", "遅羽町", "比島", "鹿谷町", "北谷町", "荒土町", "村岡町", "平泉寺町",
-            "福井市美山町", "美山", "朝谷", "市波", "小宇坂", "大宇坂", "神波", "境寺", "蔵作", "高田"
-        ];
-
-        let currentGps = { lat: null, lng: null, text: "未取得" };
+        let currentGps = { text: "未取得" };
         let currentUser = "作業員A";
-        
         let visibility = { blackboard: true, project: true, type: true, location: true, remarks: true };
-        let boardState = {
-            project: "大野市朝晴町 水道管修繕工事",
-            type: "配管工",
-            location: "No.3 + 5.0m",
-            remarks: "掘削完了 舗装版破砕"
-        };
+        let boardState = { project: "大野市朝晴町 水道管修繕工事", type: "配管工", location: "No.3 + 5.0m", remarks: "掘削完了 舗装版破砕" };
 
         let videoDevices = [];
         let currentDeviceIndex = 0;
@@ -345,102 +231,58 @@
             initGps();
             initDragEngine();
             updateBoardUI();
-            updateDateUI();
-            loadLogsUI();
         });
-
-        function updateDateUI() {
-            const now = new Date();
-            const dateStr = now.getFullYear() + '/' + 
-                String(now.getMonth() + 1).padStart(2, '0') + '/' + 
-                String(now.getDate()).padStart(2, '0');
-            document.getElementById('bb-date').innerText = dateStr;
-        }
 
         async function initCameraDevices() {
             try {
-                const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                tempStream.getTracks().forEach(track => track.stop());
-
                 const devices = await navigator.mediaDevices.enumerateDevices();
-                videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-                let defaultIndex = videoDevices.findIndex(d => 
-                    d.label.toLowerCase().includes('back') || 
-                    d.label.toLowerCase().includes('rear') || 
-                    d.label.toLowerCase().includes('environment') ||
-                    d.label.toLowerCase().includes('外') ||
-                    d.label.toLowerCase().includes('背面')
-                );
-
+                videoDevices = devices.filter(d => d.kind === 'videoinput');
+                let defaultIndex = videoDevices.findIndex(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear') || d.label.toLowerCase().includes('environment'));
                 currentDeviceIndex = defaultIndex !== -1 ? defaultIndex : 0;
                 await startCameraStream();
             } catch (err) {
-                alert("カメラの起動に失敗しました。カメラ権限を許可してください。");
+                alert("カメラ許可を確認してください。");
             }
         }
 
         async function startCameraStream() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
-
+            if (currentStream) currentStream.getTracks().forEach(t => t.stop());
             const video = document.getElementById('webcam');
             const selectedDevice = videoDevices[currentDeviceIndex];
-
             const constraints = {
-                video: selectedDevice ? { 
-                    deviceId: { exact: selectedDevice.deviceId },
-                    width: { ideal: 3840 },
-                    height: { ideal: 2160 }
-                } : { 
-                    facingMode: "environment",
-                    width: { ideal: 3840 },
-                    height: { ideal: 2160 }
-                },
+                video: selectedDevice ? { deviceId: { exact: selectedDevice.deviceId } } : { facingMode: "environment" },
                 audio: false
             };
-
             try {
                 currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = currentStream;
                 videoTrack = currentStream.getVideoTracks()[0];
             } catch (err) {
-                console.error("カメラ起動エラー:", err);
+                console.error("Camera Error:", err);
             }
         }
 
         function setZoomFactor(val) {
             if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
-                videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }).catch(() => {
-                    console.log("指定倍率は端末側でサポートされていません");
-                });
+                videoTrack.applyConstraints({ advanced: [{ zoom: parseFloat(val) }] }).catch(() => {});
             }
         }
 
         async function switchCameraDevice() {
-            if (videoDevices.length < 2) {
-                alert("切り替え可能な追加カメラが検出されませんでした。");
-                return;
-            }
+            if (videoDevices.length < 2) return;
             currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
             await startCameraStream();
         }
 
         function handleTapToFocus(e) {
-            // 黒板やUI要素のタップはフォーカスリングを出さない
             if (e.target.closest('#blackboard') || e.target.closest('button')) return;
-
             const container = document.getElementById('cameraContainer');
             const rect = container.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
             const layer = document.getElementById('focusLayer');
             layer.innerHTML = `<div class="focus-ring" style="left: ${x - 30}px; top: ${y - 30}px;"></div>`;
             setTimeout(() => { layer.innerHTML = ''; }, 800);
-
-            // カメラにフォーカス再リクエスト
             if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
                 videoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
             }
@@ -448,42 +290,24 @@
 
         function initGps() {
             if ("geolocation" in navigator) {
-                navigator.geolocation.watchPosition(
-                    (pos) => {
-                        currentGps.lat = pos.coords.latitude.toFixed(6);
-                        currentGps.lng = pos.coords.longitude.toFixed(6);
-                        currentGps.text = `${currentGps.lat}, ${currentGps.lng}`;
-                        document.getElementById('gpsIndicator').className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-                        document.getElementById('gpsText').innerText = `GPS: ${currentGps.text}`;
-                    },
-                    (err) => {
-                        document.getElementById('gpsIndicator').className = "w-1.5 h-1.5 rounded-full bg-rose-500";
-                        document.getElementById('gpsText').innerText = "GPS未取得";
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                );
+                navigator.geolocation.watchPosition((pos) => {
+                    currentGps.text = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+                    document.getElementById('gpsIndicator').className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+                    document.getElementById('gpsText').innerText = `GPS: ${currentGps.text}`;
+                }, () => {}, { enableHighAccuracy: true });
             }
         }
 
         function initDragEngine() {
             const bb = document.getElementById('blackboard');
             const container = document.getElementById('cameraContainer');
-            let isDragging = false;
-            let startX = 0, startY = 0;
-            let initialLeft = 0, initialTop = 0;
-
-            const getClientCoords = (e) => {
-                if (e.touches && e.touches.length > 0) {
-                    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                }
-                return { x: e.clientX, y: e.clientY };
-            };
+            let isDragging = false, startX = 0, startY = 0, initialLeft = 0, initialTop = 0;
+            const getCoords = (e) => (e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY });
 
             const startDrag = (e) => {
                 isDragging = true;
-                const coords = getClientCoords(e);
-                startX = coords.x;
-                startY = coords.y;
+                const c = getCoords(e);
+                startX = c.x; startY = c.y;
                 const rect = bb.getBoundingClientRect();
                 const containerRect = container.getBoundingClientRect();
                 initialLeft = rect.left - containerRect.left;
@@ -492,44 +316,26 @@
 
             const moveDrag = (e) => {
                 if (!isDragging) return;
-                const coords = getClientCoords(e);
-                const deltaX = coords.x - startX;
-                const deltaY = coords.y - startY;
-
+                const c = getCoords(e);
                 const containerRect = container.getBoundingClientRect();
-                let newLeft = initialLeft + deltaX;
-                let newTop = initialTop + deltaY;
-
-                newLeft = Math.max(0, Math.min(newLeft, containerRect.width - bb.offsetWidth));
-                newTop = Math.max(0, Math.min(newTop, containerRect.height - bb.offsetHeight));
-
+                let newLeft = Math.max(0, Math.min(initialLeft + (c.x - startX), containerRect.width - bb.offsetWidth));
+                let newTop = Math.max(0, Math.min(initialTop + (c.y - startY), containerRect.height - bb.offsetHeight));
                 bb.style.left = `${newLeft}px`;
                 bb.style.top = `${newTop}px`;
             };
 
             const stopDrag = () => { isDragging = false; };
-
-            bb.addEventListener('mousedown', startDrag);
-            window.addEventListener('mousemove', moveDrag);
-            window.addEventListener('mouseup', stopDrag);
-            bb.addEventListener('touchstart', startDrag, { passive: true });
-            window.addEventListener('touchmove', moveDrag, { passive: true });
-            window.addEventListener('touchend', stopDrag);
+            bb.addEventListener('mousedown', startDrag); window.addEventListener('mousemove', moveDrag); window.addEventListener('mouseup', stopDrag);
+            bb.addEventListener('touchstart', startDrag, { passive: true }); window.addEventListener('touchmove', moveDrag, { passive: true }); window.addEventListener('touchend', stopDrag);
         }
 
         function toggleBbElement(target) {
             visibility[target] = !visibility[target];
-            if (target === 'blackboard') {
-                document.getElementById('blackboard').style.display = visibility.blackboard ? 'block' : 'none';
-            } else if (target === 'project') {
-                document.getElementById('bb-row-project').style.display = visibility.project ? 'block' : 'none';
-            } else if (target === 'type') {
-                document.getElementById('bb-box-type').style.display = visibility.type ? 'block' : 'none';
-            } else if (target === 'location') {
-                document.getElementById('bb-box-location').style.display = visibility.location ? 'block' : 'none';
-            } else if (target === 'remarks') {
-                document.getElementById('bb-row-remarks').style.display = visibility.remarks ? 'block' : 'none';
-            }
+            if (target === 'blackboard') document.getElementById('blackboard').style.display = visibility.blackboard ? 'block' : 'none';
+            else if (target === 'project') document.getElementById('bb-row-project').style.display = visibility.project ? 'block' : 'none';
+            else if (target === 'type') document.getElementById('bb-box-type').style.display = visibility.type ? 'block' : 'none';
+            else if (target === 'location') document.getElementById('bb-box-location').style.display = visibility.location ? 'block' : 'none';
+            else if (target === 'remarks') document.getElementById('bb-row-remarks').style.display = visibility.remarks ? 'block' : 'none';
         }
 
         function setTheme(theme) {
@@ -539,23 +345,7 @@
         }
 
         function switchUser(val) {
-            if (val === "+新規追加") {
-                const name = prompt("撮影者の名前を入力してください:");
-                if (name) {
-                    currentUser = name;
-                    const select = document.getElementById('userSelect');
-                    const opt = document.createElement('option');
-                    opt.value = name;
-                    opt.innerText = name;
-                    select.insertBefore(opt, select.lastElementChild);
-                    select.value = name;
-                } else {
-                    document.getElementById('userSelect').value = currentUser;
-                    return;
-                }
-            } else {
-                currentUser = val;
-            }
+            currentUser = val;
             document.getElementById('bb-user').innerText = `撮影者: ${currentUser}`;
         }
 
@@ -564,7 +354,6 @@
             document.getElementById('bb-type').innerText = boardState.type;
             document.getElementById('bb-location').innerText = boardState.location;
             document.getElementById('bb-remarks').innerText = boardState.remarks;
-
             document.getElementById('inputProject').value = boardState.project;
             document.getElementById('inputType').value = boardState.type;
             document.getElementById('inputLocation').value = boardState.location;
@@ -573,34 +362,13 @@
 
         function startVoiceInput(targetInputId) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("お使いのブラウザは音声入力に対応していません。(Chrome/Safari推奨)");
-                return;
-            }
-            try {
-                const recognition = new SpeechRecognition();
-                recognition.lang = 'ja-JP';
-                recognition.interimResults = false;
-
-                const targetInput = document.getElementById(targetInputId);
-                const originalPlaceholder = targetInput.placeholder;
-                targetInput.placeholder = "🎤 話してください...";
-
-                recognition.onresult = (event) => {
-                    if (event.results && event.results[0]) {
-                        targetInput.value = event.results[0][0].transcript;
-                    }
-                };
-                recognition.onerror = (event) => {
-                    alert("音声認識エラー: " + event.error);
-                };
-                recognition.onend = () => {
-                    targetInput.placeholder = originalPlaceholder;
-                };
-                recognition.start();
-            } catch (err) {
-                alert("音声入力の起動に失敗しました。マイクの権限を確認してください。");
-            }
+            if (!SpeechRecognition) return alert("お使いのブラウザは音声入力非対応です。");
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ja-JP';
+            recognition.onresult = (e) => {
+                document.getElementById(targetInputId).value = e.results[0][0].transcript;
+            };
+            recognition.start();
         }
 
         function saveEditModal() {
@@ -616,184 +384,20 @@
             const video = document.getElementById('webcam');
             const canvas = document.getElementById('captureCanvas');
             const ctx = canvas.getContext('2d');
-
-            if (!video.videoWidth) {
-                alert("カメラ映像の準備中です。");
-                return;
-            }
+            if (!video.videoWidth) return alert("カメラ準備中です。");
 
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            if (visibility.blackboard) {
-                const bb = document.getElementById('blackboard');
-                const mainContainer = video.parentElement.getBoundingClientRect();
-                const bbRect = bb.getBoundingClientRect();
-
-                const scaleX = canvas.width / mainContainer.width;
-                const scaleY = canvas.height / mainContainer.height;
-
-                const drawX = (bbRect.left - mainContainer.left) * scaleX;
-                const drawY = (bbRect.top - mainContainer.top) * scaleY;
-                const drawWidth = bbRect.width * scaleX;
-                const drawHeight = bb.offsetHeight * scaleY;
-
-                let bgColor1 = "#14532d", bgColor2 = "#064e3b", borderColor = "#854d0e", textColor = "#fef08a";
-                if (bb.classList.contains('board-theme-black')) {
-                    bgColor1 = "#18181b"; bgColor2 = "#09090b"; borderColor = "#3f3f46"; textColor = "#ffffff";
-                } else if (bb.classList.contains('board-theme-white')) {
-                    bgColor1 = "#ffffff"; bgColor2 = "#f4f4f5"; borderColor = "#71717a"; textColor = "#09090b";
-                }
-
-                const grad = ctx.createLinearGradient(drawX, drawY, drawX + drawWidth, drawY + drawHeight);
-                grad.addColorStop(0, bgColor1);
-                grad.addColorStop(1, bgColor2);
-                ctx.fillStyle = grad;
-                ctx.fillRect(drawX, drawY, drawWidth, drawHeight);
-
-                ctx.lineWidth = 6 * (drawWidth / 320);
-                ctx.strokeStyle = borderColor;
-                ctx.strokeRect(drawX, drawY, drawWidth, drawHeight);
-
-                ctx.fillStyle = textColor;
-                const scaleFactor = drawWidth / 320;
-                const padding = 12 * scaleFactor;
-                let currentY = drawY + padding + (20 * scaleFactor);
-
-                ctx.font = `bold ${20 * scaleFactor}px sans-serif`;
-                const dateStr = document.getElementById('bb-date').innerText;
-                ctx.fillText(`${dateStr}  撮影者: ${currentUser}`, drawX + padding, currentY);
-
-                currentY += 10 * scaleFactor;
-                ctx.strokeStyle = textColor;
-                ctx.globalAlpha = 0.3;
-                ctx.beginPath();
-                ctx.moveTo(drawX + padding, currentY);
-                ctx.lineTo(drawX + drawWidth - padding, currentY);
-                ctx.stroke();
-                ctx.globalAlpha = 1.0;
-
-                if (visibility.project) {
-                    currentY += 22 * scaleFactor;
-                    ctx.font = `${15 * scaleFactor}px sans-serif`;
-                    ctx.fillText("工事名", drawX + padding, currentY);
-                    currentY += 28 * scaleFactor;
-                    ctx.font = `bold ${26 * scaleFactor}px sans-serif`;
-                    ctx.fillText(boardState.project, drawX + padding, currentY, drawWidth - (padding * 2));
-                }
-
-                if (visibility.type || visibility.location) {
-                    currentY += 28 * scaleFactor;
-                    ctx.font = `${15 * scaleFactor}px sans-serif`;
-                    if (visibility.type) ctx.fillText("工種", drawX + padding, currentY);
-                    if (visibility.location) ctx.fillText("測点", drawX + (visibility.type ? drawX + (drawWidth / 2) : drawX + padding), currentY);
-
-                    currentY += 26 * scaleFactor;
-                    ctx.font = `bold ${24 * scaleFactor}px sans-serif`;
-                    if (visibility.type && visibility.location) {
-                        ctx.fillText(boardState.type, drawX + padding, currentY, (drawWidth / 2) - padding);
-                        ctx.fillText(boardState.location, drawX + (drawWidth / 2), currentY, (drawWidth / 2) - padding);
-                    } else if (visibility.type) {
-                        ctx.fillText(boardState.type, drawX + padding, currentY, drawWidth - (padding * 2));
-                    } else if (visibility.location) {
-                        ctx.fillText(boardState.location, drawX + padding, currentY, drawWidth - (padding * 2));
-                    }
-                }
-
-                if (visibility.remarks) {
-                    currentY += 28 * scaleFactor;
-                    ctx.font = `${15 * scaleFactor}px sans-serif`;
-                    ctx.fillText("備考 / 施工状況", drawX + padding, currentY);
-                    currentY += 24 * scaleFactor;
-                    ctx.font = `${20 * scaleFactor}px sans-serif`;
-                    ctx.fillText(boardState.remarks, drawX + padding, currentY, drawWidth - (padding * 2));
-                }
-            }
-
             const now = new Date();
-            const timeStamp = now.getFullYear() +
-                String(now.getMonth() + 1).padStart(2, '0') +
-                String(now.getDate()).padStart(2, '0') + "_" +
-                String(now.getHours()).padStart(2, '0') +
-                String(now.getMinutes()).padStart(2, '0');
-
-            const fileName = `${sanitize(boardState.project)}_${sanitize(boardState.type)}_${sanitize(boardState.location)}_${timeStamp}_${currentUser}.jpg`;
+            const fileName = `${boardState.project}_${now.getTime()}.jpg`;
             const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
 
             const a = document.createElement('a');
             a.href = dataUrl;
             a.download = fileName;
             a.click();
-
-            saveLogRecord({
-                id: Date.now(),
-                fileName: fileName,
-                dateTime: now.toLocaleString('ja-JP'),
-                user: currentUser,
-                project: boardState.project,
-                type: boardState.type,
-                location: boardState.location,
-                remarks: boardState.remarks,
-                gps: currentGps.text,
-                thumbnail: dataUrl
-            });
-        }
-
-        function sanitize(str) {
-            return str.replace(/[\\/:*?"<>|]/g, '_').replace(/\s+/g, '');
-        }
-
-        function saveLogRecord(record) {
-            const logs = JSON.parse(localStorage.getItem('construction_camera_logs') || '[]');
-            logs.unshift(record);
-            localStorage.setItem('construction_camera_logs', JSON.stringify(logs));
-            loadLogsUI();
-
-            record.folderId = GOOGLE_FOLDER_ID;
-            fetch(GOOGLE_GAS_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(record)
-            }).catch(() => {});
-        }
-
-        function loadLogsUI() {
-            const logs = JSON.parse(localStorage.getItem('construction_camera_logs') || '[]');
-            const tbody = document.getElementById('logTableBody');
-            document.getElementById('logCount').innerText = `総件数: ${logs.length} 件`;
-
-            tbody.innerHTML = logs.map(log => `
-                <tr>
-                    <td class="p-2"><img src="${log.thumbnail}" class="w-10 h-10 object-cover rounded border border-zinc-700"></td>
-                    <td class="p-2"><div class="font-mono text-[9px] text-slate-400">${log.dateTime}</div><div class="font-bold text-emerald-400 text-[10px]">${log.user}</div></td>
-                    <td class="p-2"><div class="font-bold">${log.project}</div><div class="text-slate-400 text-[10px]">${log.type}</div></td>
-                    <td class="p-2"><div>${log.location}</div><div class="text-slate-400 text-[10px] truncate max-w-[100px]">${log.remarks}</div></td>
-                    <td class="p-2 font-mono text-[9px] text-slate-400">${log.gps}</td>
-                </tr>
-            `).join('');
-        }
-
-        function exportCSV() {
-            const logs = JSON.parse(localStorage.getItem('construction_camera_logs') || '[]');
-            if (logs.length === 0) return alert("ログデータがありません。");
-            let csvContent = "\uFEFFID,日時,撮影者,工事名,工種,測点,備考,GPS,ファイル名\n";
-            logs.forEach(log => {
-                csvContent += `${log.id},"${log.dateTime}","${log.user}","${log.project}","${log.type}","${log.location}","${log.remarks}","${log.gps}","${log.fileName}"\n`;
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `現場撮影台帳ログ_${new Date().toISOString().slice(0,10)}.csv`;
-            link.click();
-        }
-
-        function clearLogs() {
-            if (confirm("撮影ログ履歴を削除しますか？")) {
-                localStorage.removeItem('construction_camera_logs');
-                loadLogsUI();
-            }
         }
 
         function toggleModal(modalId, show) {
