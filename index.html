@@ -23,9 +23,9 @@
             font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
             font-weight: 700;
         }
-        .board-theme-black { background: linear-gradient(135deg, #18181b, #09090b); border: 4px solid #3f3f46; color: #ffffff; }
-        .board-theme-green { background: linear-gradient(135deg, #14532d, #064e3b); border: 4px solid #854d0e; color: #fef08a; }
-        .board-theme-white { background: linear-gradient(135deg, #ffffff, #f4f4f5); border: 4px solid #71717a; color: #09090b; }
+        .board-theme-black { background: linear-gradient(135deg, #18181b, #09090b); border: 3px solid #3f3f46; color: #ffffff; }
+        .board-theme-green { background: linear-gradient(135deg, #14532d, #064e3b); border: 3px solid #854d0e; color: #fef08a; }
+        .board-theme-white { background: linear-gradient(135deg, #ffffff, #f4f4f5); border: 3px solid #71717a; color: #09090b; }
         
         .icon-rotate { transition: transform 0.3s ease; }
         @media (orientation: landscape) {
@@ -39,8 +39,8 @@
         }
         .focus-ring {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border: 2px solid #eab308;
             border-radius: 50%;
             pointer-events: none;
@@ -49,55 +49,57 @@
         }
     </style>
 </head>
-<body class="text-slate-100 flex flex-col h-screen h-[100dvh] overflow-hidden bg-black">
+<body class="text-slate-100 flex flex-col h-screen h-[100dvh] overflow-hidden bg-black justify-between">
 
-    <header class="bg-black/90 px-3 py-1.5 flex items-center justify-between z-30 shrink-0 border-b border-white/10">
+    <!-- Header Navigation -->
+    <header class="bg-black/90 px-3 py-1 flex items-center justify-between z-30 shrink-0 border-b border-white/10">
         <div class="flex items-center space-x-2">
             <span class="bg-emerald-600 text-[10px] font-bold px-1.5 py-0.5 rounded text-white icon-rotate">奥越・美山</span>
             <h1 class="text-xs font-bold text-white icon-rotate">電子黒板カメラ</h1>
         </div>
         <div class="flex items-center space-x-1.5">
-            <button onclick="switchCameraDevice()" class="bg-zinc-800 text-xs text-white px-2 py-1 rounded-full border border-white/20 icon-rotate">📷 切替</button>
-            <select id="userSelect" onchange="switchUser(this.value)" class="bg-zinc-800 border border-white/20 text-xs text-white rounded-full px-1.5 py-1">
+            <button onclick="switchCameraDevice()" class="bg-zinc-800 text-[11px] text-white px-2 py-0.5 rounded-full border border-white/20 icon-rotate">📷 切替</button>
+            <select id="userSelect" onchange="switchUser(this.value)" class="bg-zinc-800 border border-white/20 text-[11px] text-white rounded-full px-1 py-0.5">
                 <option value="作業員A">作業員A</option>
                 <option value="作業員B">作業員B</option>
                 <option value="現場監督">現場監督</option>
                 <option value="+新規追加">+ 新規</option>
             </select>
-            <button onclick="toggleModal('logModal', true)" class="bg-zinc-800 text-xs text-white px-2 py-1 rounded-full border border-white/20 icon-rotate">📋 台帳</button>
+            <button onclick="toggleModal('logModal', true)" class="bg-zinc-800 text-[11px] text-white px-2 py-0.5 rounded-full border border-white/20 icon-rotate">📋 台帳</button>
         </div>
     </header>
 
-    <main id="cameraContainer" onclick="handleTapToFocus(event)" class="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
+    <!-- Main Camera View Window -->
+    <main id="cameraContainer" onclick="handleTapToFocus(event)" class="relative flex-1 bg-black flex items-center justify-center overflow-hidden min-h-0">
         <video id="webcam" autoplay playsinline class="absolute inset-0 w-full h-full object-cover"></video>
         
-        <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-2.5 font-chalk board-theme-green shadow-2xl inline-block"
-             style="top: 15px; left: 15px; width: 240px; touch-action: none;">
-            <div class="flex justify-between items-center border-b border-current/20 pb-1 mb-1 text-[11px] opacity-80">
+        <div id="blackboard" class="absolute z-20 cursor-move rounded-md p-2 font-chalk board-theme-green shadow-2xl inline-block"
+             style="top: 10px; left: 10px; width: 220px; touch-action: none;">
+            <div class="flex justify-between items-center border-b border-current/20 pb-0.5 mb-1 text-[10px] opacity-80">
                 <span class="font-mono" id="bb-date">2026/10/15</span>
                 <span class="text-[9px] bg-black/30 px-1 py-0.5 rounded" id="bb-user">撮影者: 作業員A</span>
             </div>
             <div id="bb-row-project" class="mb-1">
-                <div class="text-[9px] opacity-70">工事名</div>
-                <div id="bb-project" class="text-xs font-bold truncate">大野市朝晴町 水道管修繕工事</div>
+                <div class="text-[8px] opacity-70">工事名</div>
+                <div id="bb-project" class="text-[11px] font-bold truncate">大野市朝晴町 水道管修繕工事</div>
             </div>
-            <div id="bb-row-type-loc" class="grid grid-cols-2 gap-1.5 border-t border-current/20 pt-1 mb-1">
+            <div id="bb-row-type-loc" class="grid grid-cols-2 gap-1 border-t border-current/20 pt-0.5 mb-1">
                 <div id="bb-box-type">
-                    <div class="text-[9px] opacity-70">工種</div>
-                    <div id="bb-type" class="text-xs font-bold truncate">配管工</div>
+                    <div class="text-[8px] opacity-70">工種</div>
+                    <div id="bb-type" class="text-[11px] font-bold truncate">配管工</div>
                 </div>
                 <div id="bb-box-location">
-                    <div class="text-[9px] opacity-70">測点</div>
-                    <div id="bb-location" class="text-xs font-bold truncate">No.3 + 5.0m</div>
+                    <div class="text-[8px] opacity-70">測点</div>
+                    <div id="bb-location" class="text-[11px] font-bold truncate">No.3 + 5.0m</div>
                 </div>
             </div>
-            <div id="bb-row-remarks" class="border-t border-current/20 pt-1">
-                <div class="text-[9px] opacity-70">備考 / 施工状況</div>
-                <div id="bb-remarks" class="text-[10px] break-words line-clamp-2">掘削完了 舗装版破砕</div>
+            <div id="bb-row-remarks" class="border-t border-current/20 pt-0.5">
+                <div class="text-[8px] opacity-70">備考 / 施工状況</div>
+                <div id="bb-remarks" class="text-[9px] break-words line-clamp-2">掘削完了 舗装版破砕</div>
             </div>
         </div>
 
-        <div class="absolute top-2 left-2 z-10 bg-black/60 border border-white/20 px-2 py-0.5 rounded-full text-[10px] text-slate-300 flex items-center space-x-1 icon-rotate">
+        <div class="absolute top-2 left-2 z-10 bg-black/60 border border-white/20 px-2 py-0.5 rounded-full text-[9px] text-slate-300 flex items-center space-x-1 icon-rotate">
             <span id="gpsIndicator" class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
             <span id="gpsText">GPS取得中...</span>
         </div>
@@ -106,14 +108,17 @@
         <canvas id="captureCanvas" class="hidden"></canvas>
     </main>
 
-    <div class="bg-black border-t border-white/10 px-2 py-1.5 z-30 shrink-0 space-y-1.5">
+    <!-- Bottom Controls -->
+    <div class="bg-black border-t border-white/10 px-2 py-1 z-30 shrink-0 space-y-1">
+        <!-- 倍率選択ボタン -->
         <div class="flex items-center justify-center space-x-3 py-0.5">
-            <button onclick="setZoomFactor(0.6)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">0.6x</button>
-            <button onclick="setZoomFactor(1.0)" class="w-7 h-7 rounded-full bg-emerald-600 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">1x</button>
-            <button onclick="setZoomFactor(2.0)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">2x</button>
-            <button onclick="setZoomFactor(3.0)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate">3x</button>
+            <button onclick="setZoomFactor(0.6)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">0.6x</button>
+            <button onclick="setZoomFactor(1.0)" class="w-7 h-7 rounded-full bg-emerald-600 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95 shadow">1x</button>
+            <button onclick="setZoomFactor(2.0)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">2x</button>
+            <button onclick="setZoomFactor(3.0)" class="w-7 h-7 rounded-full bg-zinc-900 border border-white/20 text-[10px] font-bold text-white flex items-center justify-center icon-rotate active:scale-95">3x</button>
         </div>
 
+        <!-- 黒板表示コントロール -->
         <div class="flex items-center justify-between text-[10px] space-x-1 overflow-x-auto py-0.5">
             <div class="flex items-center space-x-1 shrink-0">
                 <button onclick="toggleBbElement('blackboard')" class="bg-emerald-600 text-white px-2 py-0.5 rounded font-bold icon-rotate">黒板: ON</button>
@@ -129,37 +134,39 @@
             </div>
         </div>
 
+        <!-- 撮影シャッターボタン周り -->
         <div class="flex items-center justify-around py-1">
-            <button onclick="toggleModal('ocrModal', true)" class="w-10 h-10 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate">
+            <button onclick="toggleModal('ocrModal', true)" class="w-10 h-10 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
                 <span class="text-xs">📄</span>
                 <span class="text-[7px] font-bold">OCR</span>
             </button>
 
-            <button onclick="takePhoto()" class="w-14 h-14 rounded-full border-4 border-white bg-transparent flex items-center justify-center active:scale-90 transition-transform">
-                <div class="w-11 h-11 rounded-full bg-white"></div>
+            <button onclick="takePhoto()" class="w-13 h-13 rounded-full border-4 border-white bg-transparent flex items-center justify-center active:scale-90 transition-transform">
+                <div class="w-10 h-10 rounded-full bg-white"></div>
             </button>
 
-            <button onclick="toggleModal('editModal', true)" class="w-10 h-10 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate">
+            <button onclick="toggleModal('editModal', true)" class="w-10 h-10 bg-zinc-900 border border-white/20 rounded-full flex flex-col items-center justify-center text-white icon-rotate active:scale-95">
                 <span class="text-xs">✏️</span>
                 <span class="text-[7px] font-bold">編集</span>
             </button>
         </div>
     </div>
 
+    <!-- Modals -->
     <div id="ocrModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4 overflow-y-auto">
-        <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-            <h2 class="text-sm font-bold text-white">📄 伝票解析 ＆ 地名自動補正</h2>
-            <button onclick="toggleModal('ocrModal', false)" class="text-slate-400 text-xl font-bold px-2">&times;</button>
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+            <h2 class="text-xs font-bold text-white">📄 伝票解析 ＆ 地名自動補正</h2>
+            <button onclick="toggleModal('ocrModal', false)" class="text-slate-400 text-lg font-bold px-2">&times;</button>
         </div>
-        <div class="mt-4 space-y-4 flex-1">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-                <input type="file" id="ocrFileInput" accept="image/*" onchange="processOcrImage(event)" class="text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white w-full"/>
+        <div class="mt-3 space-y-3 flex-1">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-2.5">
+                <input type="file" id="ocrFileInput" accept="image/*" onchange="processOcrImage(event)" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-emerald-600 file:text-white w-full"/>
             </div>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-                <textarea id="ocrRawInput" rows="3" placeholder="伝票テキストを入力" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-slate-200"></textarea>
-                <button onclick="parseRawText()" class="mt-2 w-full bg-zinc-800 text-xs font-bold py-2 rounded text-emerald-400">テキスト照合を実行</button>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-2.5">
+                <textarea id="ocrRawInput" rows="2" placeholder="伝票テキストを入力" class="w-full bg-black border border-zinc-800 rounded p-2 text-xs text-slate-200"></textarea>
+                <button onclick="parseRawText()" class="mt-2 w-full bg-zinc-800 text-xs font-bold py-1.5 rounded text-emerald-400">テキスト照合を実行</button>
             </div>
-            <div id="ocrResultBox" class="hidden bg-zinc-900 border border-emerald-500/50 rounded-lg p-3 space-y-2">
+            <div id="ocrResultBox" class="hidden bg-zinc-900 border border-emerald-500/50 rounded-lg p-2.5 space-y-2">
                 <input type="text" id="resProject" class="w-full bg-black border border-zinc-800 rounded p-1 text-xs text-white">
                 <button onclick="applyOcrToBoard()" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded">黒板へ反映</button>
             </div>
@@ -167,49 +174,49 @@
     </div>
 
     <div id="editModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4 overflow-y-auto">
-        <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-            <h2 class="text-sm font-bold text-white">✏️ 黒板記載事項の修正 (音声入力対応)</h2>
-            <button onclick="toggleModal('editModal', false)" class="text-slate-400 text-xl font-bold px-2">&times;</button>
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+            <h2 class="text-xs font-bold text-white">✏️ 黒板記載事項の修正</h2>
+            <button onclick="toggleModal('editModal', false)" class="text-slate-400 text-lg font-bold px-2">&times;</button>
         </div>
-        <div class="mt-4 space-y-3 flex-1">
+        <div class="mt-3 space-y-2.5 flex-1">
             <div>
-                <label class="block text-xs text-slate-400 mb-1">工事名</label>
-                <div class="flex space-x-2">
-                    <input type="text" id="inputProject" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100">
-                    <button onclick="startVoiceInput('inputProject')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
+                <label class="block text-[10px] text-slate-400 mb-0.5">工事名</label>
+                <div class="flex space-x-1.5">
+                    <input type="text" id="inputProject" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-slate-100">
+                    <button onclick="startVoiceInput('inputProject')" class="bg-zinc-800 px-2.5 rounded text-xs text-emerald-400 border border-zinc-700">🎤</button>
                 </div>
             </div>
             <div>
-                <label class="block text-xs text-slate-400 mb-1">工種</label>
-                <div class="flex space-x-2">
-                    <input type="text" id="inputType" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100">
-                    <button onclick="startVoiceInput('inputType')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
+                <label class="block text-[10px] text-slate-400 mb-0.5">工種</label>
+                <div class="flex space-x-1.5">
+                    <input type="text" id="inputType" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-slate-100">
+                    <button onclick="startVoiceInput('inputType')" class="bg-zinc-800 px-2.5 rounded text-xs text-emerald-400 border border-zinc-700">🎤</button>
                 </div>
             </div>
             <div>
-                <label class="block text-xs text-slate-400 mb-1">測点</label>
-                <div class="flex space-x-2">
-                    <input type="text" id="inputLocation" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100">
-                    <button onclick="startVoiceInput('inputLocation')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
+                <label class="block text-[10px] text-slate-400 mb-0.5">測点</label>
+                <div class="flex space-x-1.5">
+                    <input type="text" id="inputLocation" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-slate-100">
+                    <button onclick="startVoiceInput('inputLocation')" class="bg-zinc-800 px-2.5 rounded text-xs text-emerald-400 border border-zinc-700">🎤</button>
                 </div>
             </div>
             <div>
-                <label class="block text-xs text-slate-400 mb-1">備考</label>
-                <div class="flex space-x-2">
-                    <textarea id="inputRemarks" rows="2" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-2 text-sm text-slate-100"></textarea>
-                    <button onclick="startVoiceInput('inputRemarks')" class="bg-zinc-800 px-3 rounded text-sm text-emerald-400">🎤</button>
+                <label class="block text-[10px] text-slate-400 mb-0.5">備考</label>
+                <div class="flex space-x-1.5">
+                    <textarea id="inputRemarks" rows="2" class="flex-1 bg-zinc-900 border border-zinc-800 rounded p-1.5 text-xs text-slate-100"></textarea>
+                    <button onclick="startVoiceInput('inputRemarks')" class="bg-zinc-800 px-2.5 rounded text-xs text-emerald-400 border border-zinc-700">🎤</button>
                 </div>
             </div>
-            <button onclick="saveEditModal()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-lg text-sm mt-4">黒板に反映</button>
+            <button onclick="saveEditModal()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-lg text-xs mt-3">黒板に反映</button>
         </div>
     </div>
 
     <div id="logModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col p-4">
-        <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-            <h2 class="text-sm font-bold text-white">📋 撮影ログ台帳</h2>
-            <button onclick="toggleModal('logModal', false)" class="text-slate-400 text-xl font-bold px-2">&times;</button>
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+            <h2 class="text-xs font-bold text-white">📋 撮影ログ台帳</h2>
+            <button onclick="toggleModal('logModal', false)" class="text-slate-400 text-lg font-bold px-2">&times;</button>
         </div>
-        <div id="logTableBody" class="flex-1 overflow-y-auto mt-3 space-y-2"></div>
+        <div id="logTableBody" class="flex-1 overflow-y-auto mt-2 space-y-2"></div>
     </div>
 
     <script>
@@ -281,7 +288,7 @@
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const layer = document.getElementById('focusLayer');
-            layer.innerHTML = `<div class="focus-ring" style="left: ${x - 30}px; top: ${y - 30}px;"></div>`;
+            layer.innerHTML = `<div class="focus-ring" style="left: ${x - 25}px; top: ${y - 25}px;"></div>`;
             setTimeout(() => { layer.innerHTML = ''; }, 800);
             if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
                 videoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
@@ -362,13 +369,17 @@
 
         function startVoiceInput(targetInputId) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return alert("お使いのブラウザは音声入力非対応です。");
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ja-JP';
-            recognition.onresult = (e) => {
-                document.getElementById(targetInputId).value = e.results[0][0].transcript;
-            };
-            recognition.start();
+            if (!SpeechRecognition) return alert("お使いのブラウザは音声入力非対応です。キーボードのマイクをお使いください。");
+            try {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ja-JP';
+                recognition.onresult = (e) => {
+                    document.getElementById(targetInputId).value = e.results[0][0].transcript;
+                };
+                recognition.start();
+            } catch (err) {
+                alert("音声入力の起動に失敗しました。");
+            }
         }
 
         function saveEditModal() {
